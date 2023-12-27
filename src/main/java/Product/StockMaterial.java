@@ -1,9 +1,28 @@
 package Product;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.UUID;
 
-public record StockMaterial(int quantity,
-                            MaterialUnits unit,
-                            MaterialType type){
+@AllArgsConstructor
+@Getter
+public class StockMaterial{
+
+    private int quantity;
+    private MaterialUnits unit;
+    private MaterialType type;
     private static final UUID id = UUID.randomUUID();
+
+    public void use(int quantity) throws Exception {
+        if (quantity > this.quantity) {
+            throw new Exception("Not enough material");
+        }
+        this.quantity -= quantity;
+    }
+
+    public void restock(int quantity) {
+        this.quantity += quantity;
+    }
 }
