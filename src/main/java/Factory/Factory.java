@@ -1,6 +1,9 @@
 package Factory;
 
 import EventManagement.Channels.ProductionEventChannel;
+import EventManagement.Channels.RepairEventChannel;
+import EventManagement.EventPublisher.RepairEventPublisher;
+import ProductionEntity.Device.Device;
 import ProductionEntity.Human.Repairman;
 import Operation.OperationalCapable;
 import Operation.WorkType.WorkType;
@@ -10,6 +13,8 @@ import Product.ProductSeries;
 import Util.TimeAndReportManager;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +41,9 @@ public abstract class Factory {
     protected List<ProductSeries> orderedProductSeries = new ArrayList<ProductSeries>();
     protected List<ProductSeries> producedProductSeries = new ArrayList<ProductSeries>();
 
-    private ProductionEventChannel productionEventChannel = new ProductionEventChannel();
+    private RepairEventChannel repairEventChannel = new RepairEventChannel();
+
+    Logger logger = LogManager.getLogger(Factory.class);
 
     private boolean working = false;
 
@@ -59,7 +66,7 @@ public abstract class Factory {
     private ProductionLine findProductionLine(ProductSeries productSeries) {
         ProductionLine productionLine;
         productionLine = productionLines.stream()
-                .filter(line -> !line.isWorking())
+                .filter(line -> line.getState() == ProductionLineState.FREE)
                 .findFirst()
                 .orElse(null);
         if (productionLine == null) {
@@ -93,30 +100,31 @@ public abstract class Factory {
      * @param workType Work type to find worker for
      * @return Worker for given work type
      */
-    private OperationalCapable findWorker(WorkType workType) {
+    private OperationalCapable findWorker(WorkType workType) throws Exception {
         //TODO: worker on another production line should not be able to work on this production line.
         OperationalCapable worker = null;
         worker = operationalCapables.stream()
-                .filter(operationalCapable -> operationalCapable.getWorkType() == workType)
+                .filter(operationalCapable -> operationalCapable.getWorkType() == workType && !operationalCapable.isWorking())
                 .findFirst()
                 .orElse(null);
         if (worker == null) {
-            throw new RuntimeException("No worker for this work type");
+            throw new Exception("No free worker for work type " + workType);
         } else {
             return worker;
         }
     }
 
-    private void addWorkersToProductionLine(ProductionLine productionLine) {
+    private void addWorkersToProductionLine(ProductionLine productionLine) throws Exception {
         for (WorkType workType : productionLine.getWorkerSequence()) {
             OperationalCapable worker = findWorker(workType);
             productionLine.addWorker(worker);
+            worker.setWorking(true);
         }
     }
 
     public boolean isWorking() {
         for(ProductionLine productionLine : productionLines) {
-            if(productionLine.isWorking()) {
+            if(productionLine.getState() == ProductionLineState.WORKING) {
                 return true;
             }
         }
@@ -133,7 +141,7 @@ public abstract class Factory {
 
     public boolean haveFreeProductionLine(){
         for(ProductionLine productionLine : productionLines) {
-            if (!productionLine.isWorking()) {
+            if (productionLine.getState() == ProductionLineState.FREE) {
                 return true;
             }
         }
@@ -141,17 +149,48 @@ public abstract class Factory {
     }
 
     public void startProduction() {
+
+        try {
+            addDevicesAndRepairmenToChannel();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return;
+        }
+
         TimeAndReportManager.getInstance().start();
 
         for(ProductSeries orderedProductSeries : orderedProductSeries){
             ProductionLine productionLine = findProductionLine(orderedProductSeries);
 
             assert productionLine != null;
-            addWorkersToProductionLine(productionLine);
+            try {
+                addWorkersToProductionLine(productionLine);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                return;
+            }
         }
 
         for(ProductionLine productionLine : productionLines){
-            productionLine.workUntilFinished();
+            try {
+                productionLine.workUntilFinished();
+            } catch (Exception e) {
+                stopAllProductionLines();
+                logger.error(e.getMessage());
+                return;
+            }
+        }
+    }
+
+    private void addDevicesAndRepairmenToChannel() {
+        for(OperationalCapable operationalCapable : operationalCapables){
+            if(operationalCapable instanceof Device){
+                ((Device) operationalCapable).subscribeAsPublisher(repairEventChannel);
+            }
+        }
+        for(Repairman repairman : repairmen){
+            repairman.subscribeAsListener(repairEventChannel);
+            repairman.subscribeAsPublisher(repairEventChannel);
         }
     }
 
@@ -162,5 +201,11 @@ public abstract class Factory {
             }
         }
         return null;
+    }
+
+    private void stopAllProductionLines(){
+        for(ProductionLine productionLine : productionLines){
+            productionLine.setState(ProductionLineState.STOPPED);
+        }
     }
 }

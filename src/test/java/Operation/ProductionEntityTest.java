@@ -28,7 +28,7 @@ class ProductionEntityTest {
     }
 
     @Test
-    void workOnProduct() {
+    void workOnProduct() throws Exception {
         worker.workOnProduct(product);
         assertTrue(product.getCurrentOperation().isFinished());
         Operation operation = product.getFirstOperation();

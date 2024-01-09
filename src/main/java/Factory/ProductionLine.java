@@ -9,11 +9,11 @@ import Product.ProductSeries;
 import Util.TimeAndReportManager;
 import Util.TimeObserver;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +31,7 @@ public class ProductionLine implements TimeObserver {
     private ProductSeries productSeries;
 
     private List<WorkType> workerSequence;
-    private boolean working = false;
+    private ProductionLineState state = ProductionLineState.FREE;
 
     private int currentProductIndex = 0;
 
@@ -69,7 +69,7 @@ public class ProductionLine implements TimeObserver {
         this.productSeries = productSeries;
         this.workerSequence = productSeries.getWorkerSequence();
 
-        this.working = true;
+        this.state = ProductionLineState.AWAITING_START;
     }
 
     /**
@@ -80,7 +80,7 @@ public class ProductionLine implements TimeObserver {
      */
     public void work() {
         if(currentProductIndex >= productSeries.getProducts().size()) {
-            working = false;
+            state = ProductionLineState.FREE;
             logger.info("Production line finished working");
             return;
         }
@@ -103,25 +103,75 @@ public class ProductionLine implements TimeObserver {
         currentProductIndex++;
     }
 
-    public void workUntilFinished() {
-        working = true;
+    public void workUntilFinished() throws Exception {
+
+        if(!isLineReady()) {
+            throw new RuntimeException("Production line is not ready to start working");
+        }
+
+        state = ProductionLineState.WORKING;
         logger.info("Production line started working");
     }
 
     @Override
     public boolean onTimeUpdate(Long time) {
-        if (working) {
-            if(currentProductIndex >= productSeries.getProducts().size()) {
+        if (state == ProductionLineState.WORKING) {
+            if(productSeries.isFinished()) {
                 logger.info("Production line finished working at time " + time);
-                working = false;
+                state = ProductionLineState.FREE;
+                for(OperationalCapable worker : getWorkers()) {
+                    worker.setWorking(false);
+                }
                 return false;
             }
 
-            logger.info("Factory Line started work on product " + productSeries.getProducts().get(currentProductIndex).getName() + currentProductIndex + " at time " + time);
+            if(currentProductIndex < productSeries.getProducts().size()){
+                logger.info("Factory Line started work on product " + productSeries.getProducts().get(currentProductIndex).getName() + currentProductIndex + " at time " + time);
 
-            work();
-            return true;
+                work();
+                return true;
+            }
         }
         return false;
+    }
+
+    private List<OperationalCapable> getWorkers() {
+        List<OperationalCapable> workers = new ArrayList<>();
+        OperationalCapable worker = firstWorker;
+        while(worker != null) {
+            workers.add(worker);
+            worker = worker.getNextWorker();
+        }
+        return workers;
+    }
+
+    /**
+     * Checks if the production line is ready to start working on product series.
+     * Checks if there is enough workers in the line and if they are capable of working on the product series.
+     * @return
+     */
+    private boolean isLineReady() throws Exception {
+        if(productSeries == null){
+            throw new Exception("Production line is not assembled");
+        }
+        if(workerSequence.size() < productSeries.getWorkerSequence().size()){
+            throw new Exception("Not enough workers in production line for product " + productSeries.getProductName());
+        }
+        for(int i = 0; i < productSeries.getWorkerSequence().size(); i++){
+            if(!workerSequence.get(i).equals(productSeries.getWorkerSequence().get(i))){
+                throw new Exception("Production line is not capable of working on product " + productSeries.getProductName());
+            }
+        }
+        return true;
+    }
+
+    public List<OperationalCapable> getOperationalCapables() {
+        List<OperationalCapable> operationalCapables = new ArrayList<>();
+        OperationalCapable operationalCapable = firstWorker;
+        while(operationalCapable != null) {
+            operationalCapables.add(operationalCapable);
+            operationalCapable = operationalCapable.getNextWorker();
+        }
+        return operationalCapables;
     }
 }

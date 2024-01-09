@@ -14,9 +14,10 @@ public class DeviceResourceAbstract implements DeviceResource{
     }
 
     @Override
-    public void spend(int amount) {
-        if(current - amount < min) {
-            throw new RuntimeException("Not enough " + this.getClass().getSimpleName());
+    public void spend(int amount) throws Exception {
+        if(current - amount <= min) {
+            current -= amount;
+            throw new Exception("Not enough " + this.getClass().getSimpleName());
         }else{
             current -= amount;
         }

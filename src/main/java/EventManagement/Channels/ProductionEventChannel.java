@@ -35,12 +35,12 @@ public class ProductionEventChannel implements TimeObserver {
     }
 
     public void subscribeAsListener(ProductionEventListener eventListener) {
-        logger.info("Subscribed " + eventListener.getClass().getSimpleName() + " to production event channel");
+        logger.info("Subscribed " + eventListener.getClass().getSimpleName() + " to production event channel as listener");
         listeners.add(eventListener);
     }
 
     public void subscribeAsPublisher(ProductionEventPublisher eventPublisher) {
-        logger.info("Subscribed " + eventPublisher.getClass().getSimpleName() + " to production event channel");
+        logger.info("Subscribed " + eventPublisher.getClass().getSimpleName() + " to production event channel as publisher");
         publishers.add(eventPublisher);
     }
 
@@ -62,9 +62,14 @@ public class ProductionEventChannel implements TimeObserver {
 //                                " at time: "
 //                                + TimeAndReportManager.getInstance().getCurrentTime());
 
-                        listener.react(event);
-                        reactedEvents.add(event);
-                        actionPerformed = true;
+                        try {
+                            listener.react(event);
+
+                            reactedEvents.add(event);
+                            actionPerformed = true;
+                        } catch (Exception e) {
+                            logger.error(e.getMessage());
+                        }
                     }
                 }
 

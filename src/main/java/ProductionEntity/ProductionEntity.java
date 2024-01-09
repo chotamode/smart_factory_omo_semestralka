@@ -4,6 +4,7 @@ import EventManagement.Channels.ProductionEventChannel;
 import EventManagement.EventListener.ProductionEventListener;
 import EventManagement.EventPublisher.ProductionEventPublisher;
 import EventManagement.Events.ProductionEvent;
+import Exceptions.DeviceResource.ConditionException;
 import Operation.Operation;
 import Operation.WorkType.WorkType;
 import Operation.OperationalCapable;
@@ -21,6 +22,7 @@ public abstract class ProductionEntity implements ProductionEventListener, Produ
 
     private OperationalCapable nextWorker;
     private WorkType workType;
+    private boolean working = false;
 
     private ProductionEventChannel productionEventChannel;
 
@@ -31,7 +33,7 @@ public abstract class ProductionEntity implements ProductionEventListener, Produ
     }
 
     @Override
-    public void react(ProductionEvent event) {
+    public void react(ProductionEvent event) throws Exception {
         if (event.getType() == EventType.PRODUCT_READY_FOR_NEXT_OPERATION) {
             if (event.getTarget() == this) {
                 workOnProduct(event.getProduct());
@@ -40,7 +42,7 @@ public abstract class ProductionEntity implements ProductionEventListener, Produ
     }
 
     @Override
-    public void workOnProduct(Product product) {
+    public void workOnProduct(Product product) throws Exception {
         logger.info(this.getClass().getSimpleName() + " is working on product " + product.getName() + product.getSeriesIndex() + " at time: " + TimeAndReportManager.getInstance().getCurrentTime());
         Operation operation = product.getCurrentOperation();
         operation.perform();

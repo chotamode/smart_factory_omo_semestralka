@@ -5,7 +5,7 @@ import EventManagement.Events.Event;
 import EventManagement.Events.ProductionEvent;
 
 public interface ProductionEventListener{
-    void react(ProductionEvent event);
+    void react(ProductionEvent event) throws Exception;
 
     /**
      * Subscribe to an event channel as a listener.

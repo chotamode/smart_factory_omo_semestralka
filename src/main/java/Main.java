@@ -2,6 +2,7 @@ import ProductionEntity.Device.Cobot;
 import ProductionEntity.Device.Machine;
 import Factory.ElectronicsFactory;
 import Factory.ProductionLine;
+import ProductionEntity.Human.Repairman;
 import ProductionEntity.Human.Worker;
 import Operation.WorkType.CobotWorkType;
 import Operation.WorkType.HumanWorkType;
@@ -40,21 +41,28 @@ public class Main {
                 new Machine(MachineWorkType.MACHINE_PRESSING),
                 new Machine(MachineWorkType.MACHINE_MOLDING),
                 new Machine(MachineWorkType.MACHINE_CUTTING),
+                new Machine(MachineWorkType.MACHINE_CUTTING),
                 new Worker(HumanWorkType.HUMAN_MOLDING),
                 new Worker(HumanWorkType.HUMAN_PRESSING),
                 new Worker(HumanWorkType.HUMAN_CUTTING),
+                new Worker(HumanWorkType.HUMAN_CUTTING),
+                new Cobot(CobotWorkType.COBOT_MOLDING),
                 new Cobot(CobotWorkType.COBOT_MOLDING),
                 new Cobot(CobotWorkType.COBOT_PRESSING),
                 new Cobot(CobotWorkType.COBOT_CUTTING)
+        ));
+
+        electornicsFactory.setRepairmen(List.of(
+                new Repairman(),
+                new Repairman(),
+                new Repairman(),
+                new Repairman()
         ));
 
         final int PRODUCTION_AMOUNT1 = 200;
         final int PRODUCTION_AMOUNT2 = 100;
         final int PRODUCTION_AMOUNT3 = 50;
         final ProductBuilder productBuilder = new ProductBuilder();
-        final Product product1 = productBuilder.buildProductSmartphone();
-        final Product product2 = productBuilder.buildProductSmartWatch();
-        final Product product3 = productBuilder.buildProductLaptop();
 
         logger.info("Electronics factory accepts order to produce Smartphone in amount of " + PRODUCTION_AMOUNT1);
         electornicsFactory.acceptOrder("Smartphone", PRODUCTION_AMOUNT1);
@@ -73,8 +81,8 @@ public class Main {
             }
         }
 
-        logger.info("Factory.Factory delivers order to client");
-        logger.info(electornicsFactory.deliverOrder(product1.getName(), PRODUCTION_AMOUNT1) == product1);
+        logger.info("Factory delivers order to client");
+        logger.info(electornicsFactory.deliverOrder("Smartphone", PRODUCTION_AMOUNT1));
 
         TimeAndReportManager.getInstance().stop();
 

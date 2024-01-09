@@ -58,7 +58,7 @@ class ProductionLineTest {
     }
 
     @Test
-    public void workUntilFinished() throws InterruptedException {
+    public void workUntilFinished() throws Exception {
 
         TimeAndReportManager.getInstance().start();
 

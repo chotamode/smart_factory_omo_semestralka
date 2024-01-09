@@ -14,7 +14,7 @@ import java.util.List;
 public class Product {
     private String name;
     private String description;
-    private boolean finished = false;
+    private boolean finished;
     private Operation currentOperation;
     private Operation firstOperation;
     private Operation lastOperation;
@@ -93,5 +93,16 @@ public class Product {
 
     public Operation getNextOperation() {
         return currentOperation.getNextOperation();
+    }
+
+    public boolean isFinished() {
+        for(Operation operation : getOperations()) {
+            if(!operation.isFinished()) {
+                finished = false;
+                return false;
+            }
+        }
+        finished = true;
+        return true;
     }
 }

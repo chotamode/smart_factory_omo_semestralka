@@ -2,7 +2,6 @@ package Product;
 
 import Operation.WorkType.WorkType;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class ProductSeries {
     String productName;
     List<WorkType> workerSequence;
 
-    boolean finished = false;
+    boolean seriesFinished = false;
 
     public ProductSeries(String productName) {
         this.productName = productName;
@@ -57,7 +56,7 @@ public class ProductSeries {
                 return false;
             }
         }
-        finished = true;
+        seriesFinished = true;
         return true;
     }
 }
