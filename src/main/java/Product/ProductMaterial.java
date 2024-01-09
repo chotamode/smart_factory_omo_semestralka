@@ -24,6 +24,14 @@ public class ProductMaterial {
         this(quantity, unit, type, null);
     }
 
+    public ProductMaterial(MaterialType type) {
+        this(1, MaterialUnits.UNIT, type, null);
+    }
+
+    public ProductMaterial(int quantity, MaterialType type) {
+        this(quantity, MaterialUnits.UNIT, type, null);
+    }
+
     public Optional<StockMaterial> getStockMaterial() {
         return Optional.ofNullable(stockMaterial);
     }

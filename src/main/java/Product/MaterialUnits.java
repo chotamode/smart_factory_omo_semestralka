@@ -3,6 +3,9 @@ package Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Enum class for material units
+ */
 @AllArgsConstructor
 @Getter
 public enum MaterialUnits {
