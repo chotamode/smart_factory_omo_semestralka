@@ -3,6 +3,8 @@ package EventManagement.Channels;
 import EventManagement.EventListener.ProductionEventListener;
 import EventManagement.EventPublisher.ProductionEventPublisher;
 import EventManagement.Events.ProductionEvent;
+import Exceptions.DeviceResource.ConditionException;
+import Exceptions.DeviceResource.OilException;
 import Util.TimeAndReportManager;
 import Util.TimeObserver;
 import lombok.Getter;
@@ -29,7 +31,7 @@ public class ProductionEventChannel implements TimeObserver {
         subscribeToTimeAndReportManager();
     }
 
-    public synchronized void publishEvent(ProductionEvent event) {
+    public void publishEvent(ProductionEvent event) {
         events.add(event);
         logger.info("Event for " + event.getTarget().getClass().getSimpleName() + " and product " + event.getProduct().getName() + event.getProduct().getSeriesIndex() + " published at time: " + TimeAndReportManager.getInstance().getCurrentTime() );
     }
@@ -55,19 +57,22 @@ public class ProductionEventChannel implements TimeObserver {
                     if (event.getTarget() == listener
                             && event.getTimeStamp() < TimeAndReportManager.getInstance().getCurrentTime()
                     ) {
-
 //                        logger.info(event.getTarget().getClass().getSimpleName() +
 //                                " is reacted to event for Product series index " +
 //                                event.getProduct().getSeriesIndex() +
 //                                " at time: "
 //                                + TimeAndReportManager.getInstance().getCurrentTime());
-
                         try {
                             listener.react(event);
 
                             reactedEvents.add(event);
                             actionPerformed = true;
-                        } catch (Exception e) {
+                        } catch (ConditionException e) {
+                            logger.error(e.getMessage());
+                        }  catch (OilException e) {
+                            logger.error(e.getMessage());
+                        }
+                        catch (Exception e) {
                             logger.error(e.getMessage());
                         }
                     }

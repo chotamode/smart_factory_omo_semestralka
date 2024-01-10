@@ -32,7 +32,7 @@ public abstract class Device extends ProductionEntity implements RepairEventPubl
 
     @Override
     public void workOnProduct(Product product) throws Exception {
-        if(isFunctional()){
+//        if(isFunctional()){
             try {
                 oil.spend(1);
                 condition.spend(1);
@@ -46,7 +46,9 @@ public abstract class Device extends ProductionEntity implements RepairEventPubl
             } catch (Exception e) {
                 throw new Exception(e);}
             super.workOnProduct(product);
-        }
+//        }else{
+//            throw new Exception("Device " + this.getClass().getSimpleName() + " is not functional");
+//        }
     }
 
     public boolean isFunctional() {
