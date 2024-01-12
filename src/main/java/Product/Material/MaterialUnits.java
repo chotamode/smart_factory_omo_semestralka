@@ -1,4 +1,4 @@
-package Product;
+package Product.Material;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

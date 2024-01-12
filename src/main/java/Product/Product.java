@@ -1,7 +1,11 @@
 package Product;
 
+import Management.Visitable;
+import Management.Visitor;
 import Operation.Operation;
 import Operation.WorkType.WorkType;
+import Product.Material.ProductMaterial;
+import Product.Material.StockMaterial;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +15,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class Product {
+public class Product implements Visitable {
     private String name;
     private String description;
     private boolean finished;
@@ -29,6 +33,11 @@ public class Product {
             return false;
         }
     };
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
 
     public void addProductMaterial(ProductMaterial productMaterial) throws Exception {
 
@@ -104,5 +113,32 @@ public class Product {
         }
         finished = true;
         return true;
+    }
+
+    public int getTotalCost() {
+        int totalCost = 0;
+        for (Operation operation : getOperations()) {
+            totalCost += operation.getCost();
+        }
+        for (ProductMaterial productMaterial : productMaterials) {
+            totalCost += productMaterial.getCost();
+        }
+        return totalCost;
+    }
+
+    public void setStockMaterials(List<StockMaterial> stockMaterials) {
+        for (ProductMaterial productMaterial : productMaterials) {
+            for (StockMaterial stockMaterial : stockMaterials) {
+                if (productMaterial.getType() == stockMaterial.getType()) {
+                    productMaterial.setStockMaterial(stockMaterial);
+                }
+            }
+        }
+    }
+
+    public void addMaterials() throws Exception {
+        for (ProductMaterial productMaterial : productMaterials) {
+            productMaterial.addMaterial();
+        }
     }
 }

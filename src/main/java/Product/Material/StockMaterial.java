@@ -1,8 +1,7 @@
-package Product;
+package Product.Material;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.UUID;
 
@@ -11,13 +10,19 @@ import java.util.UUID;
 public class StockMaterial {
 
     private int quantity;
-    private MaterialUnits unit;
+    private MaterialUnits unit = MaterialUnits.UNIT;
     private MaterialType type;
     private static final UUID id = UUID.randomUUID();
     /**
      * Price per unit
      */
     private int price;
+
+    public StockMaterial(int quantity, MaterialType type) {
+        this.quantity = quantity;
+        this.type = type;
+        this.price = type.getPrice();
+    }
 
     public void use(int quantity) throws Exception {
         if (quantity > this.quantity) {
@@ -26,7 +31,7 @@ public class StockMaterial {
         this.quantity -= quantity;
     }
 
-    public void restock(int quantity) {
-        this.quantity += quantity;
+    public void add(int amount) {
+        quantity += amount;
     }
 }

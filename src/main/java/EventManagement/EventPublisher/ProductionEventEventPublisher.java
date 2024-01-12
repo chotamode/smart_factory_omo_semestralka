@@ -1,10 +1,9 @@
 package EventManagement.EventPublisher;
 
 import EventManagement.Channels.ProductionEventChannel;
-import EventManagement.Events.Event;
 import EventManagement.Events.ProductionEvent;
 
-public interface ProductionEventPublisher {
+public interface ProductionEventEventPublisher {
     default void publishEvent(ProductionEvent event){
         getProductionEventChannel().publishEvent(event);
     }

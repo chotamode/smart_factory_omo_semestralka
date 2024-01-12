@@ -1,13 +1,14 @@
 package ProductionEntity.Device;
 
 import EventManagement.Channels.RepairEventChannel;
-import EventManagement.EventPublisher.RepairEventPublisher;
+import EventManagement.EventPublisher.RepairEventEventPublisher;
 import EventManagement.Events.RepairEvent;
-import Exceptions.DeviceResource.ConditionException;
-import Exceptions.DeviceResource.OilException;
+import Exceptions.ConditionException;
+import Exceptions.OilException;
 import Operation.WorkType.WorkType;
 import Product.Product;
 import ProductionEntity.Device.Resourse.Condition;
+import ProductionEntity.Device.Resourse.DeviceResourceAbstract;
 import ProductionEntity.Device.Resourse.Oil;
 import ProductionEntity.ProductionEntity;
 import EventManagement.Events.EventType;
@@ -17,10 +18,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Getter
-public abstract class Device extends ProductionEntity implements RepairEventPublisher {
+public abstract class Device extends ProductionEntity implements RepairEventEventPublisher {
+
+    private static int lastId = 0;
+    private final int id = lastId++;
+
+    private boolean needsMaintenance = false;
 
     private final Condition condition = new Condition(100, 100);
     private final Oil oil = new Oil(100, 100);
+
+    private Long consumedElectricity = 0L;
 
     private RepairEventChannel repairEventChannel;
 
@@ -32,37 +40,51 @@ public abstract class Device extends ProductionEntity implements RepairEventPubl
 
     @Override
     public void workOnProduct(Product product) throws Exception {
-//        if(isFunctional()){
-            try {
-                oil.spend(1);
-                condition.spend(1);
-                logger.info("Device " + this.getClass().getSimpleName() + " has oil level " + oil.getCurrent() + " and condition level " + condition.getCurrent());
-            } catch (OilException e) {
-                publishEvent(new RepairEvent(e.getMessage(), this, EventType.NEEDS_OIL_REFILL, TimeAndReportManager.getInstance().getCurrentTime()));
-                throw new OilException(e.getMessage());
-            } catch (ConditionException e) {
-                publishEvent(new RepairEvent(e.getMessage(), this, EventType.NEEDS_REPAIR, TimeAndReportManager.getInstance().getCurrentTime()));
-                throw new ConditionException(e.getMessage());
-            } catch (Exception e) {
-                throw new Exception(e);}
-            super.workOnProduct(product);
-//        }else{
-//            throw new Exception("Device " + this.getClass().getSimpleName() + " is not functional");
-//        }
-    }
 
-    public boolean isFunctional() {
-        return oil.getCurrent() > 0 && condition.getCurrent() > 0;
+        try {
+            oil.spend();
+            condition.spend();
+//            logger.info("Device " + this.getClass().getSimpleName() + " has oil level " + oil.getCurrent() + " and condition level " + condition.getCurrent());
+        } catch (OilException e) {
+            if (needsMaintenance) {
+                throw new RuntimeException("Device " + this.getClass().getSimpleName() + " needs maintenance");
+            }
+            publishEvent(new RepairEvent(e.getMessage(), this, EventType.NEEDS_OIL_REFILL, TimeAndReportManager.getInstance().getCurrentTime()));
+            needsMaintenance = true;
+            throw new OilException(e.getMessage());
+        } catch (ConditionException e) {
+            if (needsMaintenance) {
+                throw new RuntimeException("Device " + this.getClass().getSimpleName() + " needs maintenance");
+            }
+            publishEvent(new RepairEvent(e.getMessage(), this, EventType.NEEDS_REPAIR, TimeAndReportManager.getInstance().getCurrentTime()));
+            needsMaintenance = true;
+            throw new ConditionException(e.getMessage());
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+
+        consumedElectricity++;
+        super.workOnProduct(product);
+
     }
 
     @Override
     public void publishEvent(RepairEvent event) {
-        RepairEventPublisher.super.publishEvent(event);
+        event.setPriority(this.getLinePriority());
+        RepairEventEventPublisher.super.publishEvent(event);
     }
 
     @Override
     public void subscribeAsPublisher(RepairEventChannel eventChannel) {
-        RepairEventPublisher.super.subscribeAsPublisher(eventChannel);
+        RepairEventEventPublisher.super.subscribeAsPublisher(eventChannel);
         repairEventChannel = eventChannel;
+    }
+
+    public void repair() {
+        needsMaintenance = false;
+    }
+
+    public DeviceResourceAbstract[] getDeviceResources() {
+        return new DeviceResourceAbstract[]{oil, condition};
     }
 }

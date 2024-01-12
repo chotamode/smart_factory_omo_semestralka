@@ -1,6 +1,6 @@
 package ProductionEntity.Device.Resourse;
 
-import Exceptions.DeviceResource.ConditionException;
+import Exceptions.ConditionException;
 
 public class Condition extends DeviceResourceAbstract{
     public Condition(int max, int current) {
@@ -8,9 +8,9 @@ public class Condition extends DeviceResourceAbstract{
     }
 
     @Override
-    public void spend(int amount) throws Exception {
+    public void spend() throws Exception {
         try {
-            super.spend(amount);
+            super.spend();
         } catch (Exception e) {
             throw new ConditionException("Condition is too low, please repair device");
         }

@@ -1,4 +1,4 @@
-package Exceptions.DeviceResource;
+package Exceptions;
 
 public class ConditionException extends Exception{
 

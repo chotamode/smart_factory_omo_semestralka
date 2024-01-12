@@ -52,7 +52,9 @@ class EventPublisherListenerTest {
         ProductionEvent productionEvent = new ProductionEvent("Test",
                 EventType.OPERATION_DONE,
                 new Product(),
-                worker, TimeAndReportManager.getInstance().getCurrentTime());
+                worker,
+                this,
+                TimeAndReportManager.getInstance().getCurrentTime());
         worker.publishEvent(productionEvent);
         assertEquals(1, ProductionEventChannel.getEvents().size());
         assertEquals(productionEvent, ProductionEventChannel.getEvents().get(0));

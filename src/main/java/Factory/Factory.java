@@ -1,13 +1,15 @@
 package Factory;
 
-import EventManagement.Channels.ProductionEventChannel;
 import EventManagement.Channels.RepairEventChannel;
-import EventManagement.EventPublisher.RepairEventPublisher;
+import Exceptions.NotEnoughMaterialException;
+import Management.Visitable;
+import Management.Visitor;
+import Product.Material.MaterialType;
 import ProductionEntity.Device.Device;
 import ProductionEntity.Human.Repairman;
 import Operation.OperationalCapable;
 import Operation.WorkType.WorkType;
-import Product.StockMaterial;
+import Product.Material.StockMaterial;
 import Product.Product;
 import Product.ProductSeries;
 import Util.TimeAndReportManager;
@@ -18,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Factory.Factory is a place where production takes place.
@@ -30,7 +33,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public abstract class Factory {
+public abstract class Factory implements Visitable {
     private List<StockMaterial> stockMaterials = new ArrayList<StockMaterial>();
     private List<ProductionLine> productionLines = new ArrayList<ProductionLine>();
 
@@ -45,14 +48,17 @@ public abstract class Factory {
 
     Logger logger = LogManager.getLogger(Factory.class);
 
-    private boolean working = false;
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
 
     /**
      * Accept order to produce product in given amount. And find the right and free production line for this product.
      * If there is no production line for this product, find free Factory.ProductionLine and reassemble it for this product.
      *
      * @param productName Name of product to produce different for each factory
-     * @param amount Amount of product to produce
+     * @param amount      Amount of product to produce
      */
     public abstract void acceptOrder(String productName, int amount);
 
@@ -82,7 +88,7 @@ public abstract class Factory {
      * Deliver order to client. Gets products from warehouse and removes them from warehouse.
      *
      * @param productName Name of product to deliver
-     * @param amount Amount of product to deliver
+     * @param amount      Amount of product to deliver
      * @return List of delivered products
      */
     public Product deliverOrder(String productName, int amount) {
@@ -123,24 +129,24 @@ public abstract class Factory {
     }
 
     public boolean isWorking() {
-        for(ProductionLine productionLine : productionLines) {
-            if(productionLine.getState() == ProductionLineState.WORKING) {
+        for (ProductionLine productionLine : productionLines) {
+            if (productionLine.getState() == ProductionLineState.WORKING) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean canAcceptOrder(){
-        if(orderedProductSeries.size() < productionLines.size() || haveFreeProductionLine()){
+    public boolean canAcceptOrder() {
+        if (orderedProductSeries.size() < productionLines.size() || haveFreeProductionLine()) {
             return true;
-        }else{
+        } else {
             throw new RuntimeException("No free production line.");
         }
     }
 
-    public boolean haveFreeProductionLine(){
-        for(ProductionLine productionLine : productionLines) {
+    public boolean haveFreeProductionLine() {
+        for (ProductionLine productionLine : productionLines) {
             if (productionLine.getState() == ProductionLineState.FREE) {
                 return true;
             }
@@ -149,6 +155,16 @@ public abstract class Factory {
     }
 
     public void startProduction() {
+
+        for (ProductSeries orderedProductSeries : orderedProductSeries) {
+            try {
+                findStockMaterialsForProduct(orderedProductSeries);
+                orderedProductSeries.addMaterials();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                return;
+            }
+        }
 
         try {
             addDevicesAndRepairmenToChannel();
@@ -159,7 +175,7 @@ public abstract class Factory {
 
         TimeAndReportManager.getInstance().start();
 
-        for(ProductSeries orderedProductSeries : orderedProductSeries){
+        for (ProductSeries orderedProductSeries : orderedProductSeries) {
             ProductionLine productionLine = findProductionLine(orderedProductSeries);
 
             assert productionLine != null;
@@ -171,7 +187,7 @@ public abstract class Factory {
             }
         }
 
-        for(ProductionLine productionLine : productionLines){
+        for (ProductionLine productionLine : productionLines) {
             try {
                 productionLine.workUntilFinished();
             } catch (Exception e) {
@@ -183,29 +199,95 @@ public abstract class Factory {
     }
 
     private void addDevicesAndRepairmenToChannel() {
-        for(OperationalCapable operationalCapable : operationalCapables){
-            if(operationalCapable instanceof Device){
+        for (OperationalCapable operationalCapable : operationalCapables) {
+            if (operationalCapable instanceof Device) {
                 ((Device) operationalCapable).subscribeAsPublisher(repairEventChannel);
             }
         }
-        for(Repairman repairman : repairmen){
+        for (Repairman repairman : repairmen) {
             repairman.subscribeAsListener(repairEventChannel);
             repairman.subscribeAsPublisher(repairEventChannel);
         }
     }
 
-    private ProductionLine findLineForProduct(ProductSeries productSeries){
-        for(ProductionLine productionLine : productionLines){
-            if(productionLine.getProductSeries() != null && productionLine.getProductSeries().equals(productSeries)){
+    private ProductionLine findLineForProduct(ProductSeries productSeries) {
+        for (ProductionLine productionLine : productionLines) {
+            if (productionLine.getProductSeries() != null && productionLine.getProductSeries().equals(productSeries)) {
                 return productionLine;
             }
         }
         return null;
     }
 
-    private void stopAllProductionLines(){
-        for(ProductionLine productionLine : productionLines){
+    private void stopAllProductionLines() {
+        for (ProductionLine productionLine : productionLines) {
             productionLine.setState(ProductionLineState.STOPPED);
         }
+    }
+
+    private StockMaterial orderMaterial(MaterialType materialType, int amount) {
+        StockMaterial stockMaterial = null;
+        if(stockMaterials.stream().anyMatch(material -> material.getType().equals(materialType))) {
+            for (StockMaterial sm : stockMaterials) {
+                if (sm.getType().equals(materialType)) {
+                    sm.add(amount);
+                    logger.info("Ordered " + amount + " " + materialType.getName() + " for " + sm.getPrice() * amount + " USD");
+                    return sm;
+                }
+            }
+        } else {
+            stockMaterial = new StockMaterial(amount, materialType);
+            stockMaterials.add(stockMaterial);
+        }
+
+        assert stockMaterial != null;
+        logger.info("Ordered " + amount + " " + materialType.getName() + " for " + stockMaterial.getPrice() * amount + " USD");
+        return stockMaterial;
+    }
+
+    private void addMaterialsToSeries(ProductSeries productSeries) {
+        for (Entry<MaterialType, Integer> entry : productSeries.getTotalMaterialNeeded().entrySet()) {
+            MaterialType materialType = entry.getKey();
+            int amount = entry.getValue();
+            orderMaterial(materialType, amount);
+        }
+    }
+
+    private void getMaterialsFromStock(ProductSeries productSeries) throws Exception {
+        for (Entry<MaterialType, Integer> entry : productSeries.getTotalMaterialNeeded().entrySet()) {
+            MaterialType materialType = entry.getKey();
+            int amount = entry.getValue();
+            for (StockMaterial stockMaterial : stockMaterials) {
+                if (stockMaterial.getType() == materialType) {
+                    stockMaterial.use(amount);
+                }
+            }
+        }
+    }
+
+    private void findStockMaterialsForProduct(ProductSeries productSeries) throws Exception {
+        List<StockMaterial> stockMaterialsToAdd = new ArrayList<>();
+
+        for (Entry<MaterialType, Integer> entry : productSeries.getTotalMaterialNeeded().entrySet()) {
+            MaterialType materialType = entry.getKey();
+            int amount = entry.getValue();
+            for (StockMaterial stockMaterial : stockMaterials) {
+                if (stockMaterial.getType() == materialType) {
+                    if (stockMaterial.getQuantity() < amount) {
+                        stockMaterial = orderMaterial(materialType, amount);
+                    }
+                }
+                stockMaterialsToAdd.add(stockMaterial);
+            }
+        }
+        for(Entry<MaterialType, Integer> entry : productSeries.getNotSetStockMaterials().entrySet()) {
+            if(stockMaterialsToAdd.stream().noneMatch(material -> material.getType().equals(entry.getKey()))){
+                MaterialType materialType = entry.getKey();
+                int amount = entry.getValue();
+                StockMaterial stockMaterial = orderMaterial(materialType, amount);
+                stockMaterialsToAdd.add(stockMaterial);
+            }
+        }
+        productSeries.setStockMaterials(stockMaterialsToAdd);
     }
 }

@@ -3,6 +3,8 @@ package Factory;
 import EventManagement.Channels.ProductionEventChannel;
 import EventManagement.Events.EventType;
 import EventManagement.Events.ProductionEvent;
+import Management.Visitable;
+import Management.Visitor;
 import Operation.OperationalCapable;
 import Operation.WorkType.WorkType;
 import Product.ProductSeries;
@@ -23,10 +25,15 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ProductionLine implements TimeObserver {
+public class ProductionLine implements TimeObserver, Visitable {
+
+    private static int lastId = 0;
+    private final int id = lastId++;
+
     private OperationalCapable firstWorker;
     private OperationalCapable lastWorker;
-    private OperationalCapable currentWorker;
+
+    private int priority = 1;
 
     private ProductSeries productSeries;
 
@@ -43,16 +50,23 @@ public class ProductionLine implements TimeObserver {
         subscribeToTimeAndReportManager();
     }
 
+    public ProductionLine(int priority) {
+        subscribeToTimeAndReportManager();
+        this.priority = priority;
+    }
+
+
+
     /**
      * Adds worker to the production line
      * @param worker Object of class implementing ProductionEntity interface
      */
     public void addWorker(OperationalCapable worker) {
         worker.subscribeToProductionEventChannel(productionEventChannel);
+        worker.setLinePriority(priority);
         if (firstWorker == null) {
             firstWorker = worker;
             lastWorker = worker;
-            currentWorker = worker;
         } else {
             lastWorker.setNextWorker(worker);
             lastWorker = worker;
@@ -97,6 +111,7 @@ public class ProductionLine implements TimeObserver {
                 EventType.PRODUCT_READY_FOR_NEXT_OPERATION,
                 productSeries.getProducts().get(currentProductIndex),
                 firstWorker,
+                this,
                 TimeAndReportManager.getInstance().getCurrentTime()
         ));
 //        firstWorker.workOnProduct(productSeries.getProducts().get(currentProductIndex));
@@ -117,7 +132,7 @@ public class ProductionLine implements TimeObserver {
     public boolean onTimeUpdate(Long time) {
         if (state == ProductionLineState.WORKING) {
             if(productSeries.isFinished()) {
-                logger.info("Production line finished working at time " + time);
+                logger.info(TimeAndReportManager.getInstance().getTimeInYMDH() + " Production line finished working");
                 state = ProductionLineState.FREE;
                 for(OperationalCapable worker : getWorkers()) {
                     worker.setWorking(false);
@@ -135,7 +150,7 @@ public class ProductionLine implements TimeObserver {
         return false;
     }
 
-    private List<OperationalCapable> getWorkers() {
+    public List<OperationalCapable> getWorkers() {
         List<OperationalCapable> workers = new ArrayList<>();
         OperationalCapable worker = firstWorker;
         while(worker != null) {
@@ -173,5 +188,17 @@ public class ProductionLine implements TimeObserver {
             operationalCapable = operationalCapable.getNextWorker();
         }
         return operationalCapables;
+    }
+
+    public void setLinePriority(int linePriority) {
+        this.priority = linePriority;
+        for(OperationalCapable worker : getOperationalCapables()) {
+            worker.setLinePriority(linePriority);
+        }
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }

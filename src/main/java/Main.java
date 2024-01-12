@@ -1,3 +1,5 @@
+import Management.Director;
+import Management.Inspector;
 import ProductionEntity.Device.Cobot;
 import ProductionEntity.Device.Machine;
 import Factory.ElectronicsFactory;
@@ -31,10 +33,9 @@ public class Main {
         final ElectronicsFactory electornicsFactory = new ElectronicsFactory();
 
         electornicsFactory.setProductionLines(List.of(
-                new ProductionLine()
-                ,
-                new ProductionLine(),
-                new ProductionLine()
+                new ProductionLine(1),
+                new ProductionLine(2),
+                new ProductionLine(3)
         ));
 
         electornicsFactory.setOperationalCapables(List.of(
@@ -53,16 +54,20 @@ public class Main {
         ));
 
         electornicsFactory.setRepairmen(List.of(
-                new Repairman(),
-                new Repairman(),
-                new Repairman(),
                 new Repairman()
+//                ,
+//                new Repairman(),
+//                new Repairman(),
+//                new Repairman()
         ));
 
         final int PRODUCTION_AMOUNT1 = 200;
         final int PRODUCTION_AMOUNT2 = 100;
         final int PRODUCTION_AMOUNT3 = 50;
         final ProductBuilder productBuilder = new ProductBuilder();
+
+        Director director = new Director(electornicsFactory);
+        Inspector inspector = new Inspector(electornicsFactory);
 
         logger.info("Electronics factory accepts order to produce Smartphone in amount of " + PRODUCTION_AMOUNT1);
         electornicsFactory.acceptOrder("Smartphone", PRODUCTION_AMOUNT1);
@@ -80,6 +85,9 @@ public class Main {
                 e.printStackTrace();
             }
         }
+
+        director.executeInspection();
+        inspector.executeInspection();
 
         logger.info("Factory delivers order to client");
         logger.info(electornicsFactory.deliverOrder("Smartphone", PRODUCTION_AMOUNT1));

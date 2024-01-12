@@ -1,10 +1,9 @@
 package EventManagement.EventListener;
 
 import EventManagement.Channels.ProductionEventChannel;
-import EventManagement.Events.Event;
 import EventManagement.Events.ProductionEvent;
 
-public interface ProductionEventListener{
+public interface ProductionEventListener {
     void react(ProductionEvent event) throws Exception;
 
     /**

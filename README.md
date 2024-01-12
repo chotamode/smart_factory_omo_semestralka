@@ -8,30 +8,30 @@
 material plus any other entities. Machines, people and products can be of different kinds.
 
 
-* [ ] F2.	Products are made in batches of a few hundred, if a batch of incompatible products changes, 
+* [x] F2.	Products are made in batches of a few hundred, if a batch of incompatible products changes, 
 the production lines need to be rearranged. Each product has a defined sequence of equipment, robots, people that need to be arranged in a line.
 
 
-* [ ] F3. Machines and robots have a cost; people, robots, machines, and materials have a cost.
+* [x] F3. Machines and robots have consumption; people, robots, machines, and materials have a cost.
 
 
-* [ ] F4. Communication between machines, robots, and people is through events.
+* [x] F4. Communication between machines, robots, and people is through events.
 An event can receive 1 to N entities (human, machine, robot) that are registered for that kind of event. Events need to be checked in.
 
 
-* [ ] F5.	Individual devices have an API to collect data about that device. We collect data about devices such as electricity,
+* [x] F5.	Individual devices have an API to collect data about that device. We collect data about devices such as electricity,
 oil, material consumption and functionality (wear and tear increases with time)
 
 
-* [ ] F6. Machines and robots break down after a certain period of time. After breaking they generate an event (alert) 
+* [x] F6. Machines and robots break down after a certain period of time. After breaking they generate an event (alert) 
 with priority according to the importance of the line, which is handled by a human repairer.
 
 
-* [ ] F7.	There is a limited number of repairers. The repair takes several bars. 
+* [x] F7.	There is a limited number of repairers. The repair takes several time units. 
 An event is generated at the start of the repair and the end of the repair (will be useful for F10 request :-). Situations arise when no repairers are available - then one waits until one of them becomes available. When a repairer becomes available, the repairer starts on the 1st highest priority, 2nd oldest defect.
 
 
-* [ ] F8.	Visit of the director and inspector. We implement a factory visit, where the director walks through the factory 
+* [x] F8.	Visit of the director and inspector. We implement a factory visit, where the director walks through the factory 
 exactly according to the tree hierarchy of entities factory ->* line -> *(machine|robot|person or product) and the inspector walks through according to the wear rate. Both the director and the inspector have actions defined on them to perform on a given entity type. Record the traversal sequence and the names of the actions performed in the log.
 
 

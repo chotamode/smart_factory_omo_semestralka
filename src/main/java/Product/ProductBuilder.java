@@ -4,10 +4,9 @@ import Operation.Operation;
 import Operation.WorkType.CobotWorkType;
 import Operation.WorkType.HumanWorkType;
 import Operation.WorkType.MachineWorkType;
-import Operation.WorkType.WorkType;
-
-import java.util.ArrayList;
-import java.util.List;
+import Product.Material.MaterialType;
+import Product.Material.MaterialUnits;
+import Product.Material.ProductMaterial;
 
 public class ProductBuilder {
     private Product product;

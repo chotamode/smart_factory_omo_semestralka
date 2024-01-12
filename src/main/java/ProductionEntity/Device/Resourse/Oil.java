@@ -1,6 +1,6 @@
 package ProductionEntity.Device.Resourse;
 
-import Exceptions.DeviceResource.OilException;
+import Exceptions.OilException;
 
 public class Oil extends DeviceResourceAbstract{
     public Oil(int max, int current) {
@@ -8,9 +8,9 @@ public class Oil extends DeviceResourceAbstract{
     }
 
     @Override
-    public void spend(int amount) throws Exception {
+    public void spend() throws Exception {
         try {
-            super.spend(amount);
+            super.spend();
         } catch (Exception e) {
             throw new OilException(e.getMessage());
         }

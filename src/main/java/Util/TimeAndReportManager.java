@@ -3,8 +3,11 @@ package Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.time.LocalDateTime;
 
 /**
  * TimeAndReportManager is a singleton class that manages time and reports.
@@ -14,7 +17,10 @@ import java.util.List;
 public class TimeAndReportManager {
 
     private static TimeAndReportManager instance;
-    private static Long time = 0L;
+//    private static Long startTime = 473352L;
+
+    private static Long startTime = 0L;
+    private static Long time;
     private static boolean isRunning = false;
 
     private static boolean isPaused = false;
@@ -25,6 +31,14 @@ public class TimeAndReportManager {
     private TimeAndReportManager() {
     }
 
+    /**
+     * Constructor with parameter for setting start time.
+     * @param time start time in seconds
+     */
+    private TimeAndReportManager(Long time) {
+        this.time = time;
+    }
+
     public static TimeAndReportManager getInstance() {
         if (instance == null) {
             instance = new TimeAndReportManager();
@@ -33,7 +47,7 @@ public class TimeAndReportManager {
     }
 
     public void start() {
-        time = 0L;
+        time = startTime;
         new Thread(() -> {
             isRunning = true;
             while (isRunning) {
@@ -64,6 +78,16 @@ public class TimeAndReportManager {
 
     public List<TimeObserver> getTimeObservers() {
         return timeObservers;
+    }
+
+    /**
+     * Gets time in form of ISO 8601.
+     * @return time in form of Year Month Day Hour
+     */
+    public String getTimeInYMDH() {
+//        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(time * 3600, 0, ZoneOffset.UTC);
+//        return dateTime.toString();
+        return time.toString();
     }
 
     public void addTimeObserver(TimeObserver timeObserver) {
