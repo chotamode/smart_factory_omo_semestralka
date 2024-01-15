@@ -31,7 +31,7 @@ public class Main {
         ElectronicsFactory electronicsFactory;
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Do you want to run one of the configurations from the JSON file or the default configuration? (Enter 'json1', 'json2' or 'default')");
+        System.out.println("Do you want to run one of the configurations from the JSON file or the default configuration? (Enter 'json1', 'json2', 'default' or 'own json')");
 
         String userInput = scanner.nextLine();
 
@@ -42,9 +42,14 @@ public class Main {
         } else if (userInput.equalsIgnoreCase("default")) {
             electronicsFactory = new ElectronicsFactory();
             defaultScenario(electronicsFactory);
+        } else if(userInput.equalsIgnoreCase("own json")) {
+            System.out.println("Enter file name located in src/main/resources/FactoryConfigurations/");
+            String fileName = scanner.nextLine();
+            electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/" + fileName);
         } else {
-            System.out.println("Invalid input. Exiting program.");
-            return;
+            System.out.println("Wrong input. Default scenario will be run.");
+            electronicsFactory = new ElectronicsFactory();
+            defaultScenario(electronicsFactory);
         }
 
         final ConfigurationReportCreator configurationReportCreator = new ConfigurationReportCreator();

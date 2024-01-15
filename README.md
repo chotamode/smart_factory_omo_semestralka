@@ -36,9 +36,13 @@ Vytvořit aplikaci pro virtuální simulaci inteligentní továrny, kde simuluje
 
 ## Požadované výstupy
 
--[ ] Design ve formě use case diagramů, class diagramů a stručného popisu jak chcete úlohu realizovat
+-[x] Design ve formě use case diagramů, class diagramů a stručného popisu jak chcete úlohu realizovat
 -[x] Veřejné API - Javadoc vygenerovaný pro funkce, kterými uživatel pracuje s vaším software
 -[x] Dvě různé konfigurace továrny, alespoň 30 entit.
+
+## Spuštění
+
+Pro spuštění aplikace je potřeba spustit třídu Main.java. V přikazové řádce bude vypsáno menu, ve kterém je možné vybrat jednu z možností.
 
 ## Design patterny
 
