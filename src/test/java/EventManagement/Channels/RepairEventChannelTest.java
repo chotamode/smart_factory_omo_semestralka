@@ -3,14 +3,14 @@ package EventManagement.Channels;
 import EventManagement.Events.EventType;
 import EventManagement.Events.RepairEvent;
 import Operation.WorkType.MachineWorkType;
-import ProductionEntity.Device.Machine;
+import Production.ProductionEntity.Device.Machine;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepairEventChannelTest {
 
-    RepairEventChannel repairEventChannel = new RepairEventChannel();
+    final RepairEventChannel repairEventChannel = new RepairEventChannel();
 
     /**
      * Test if event publishing so earlier is the elements with the highest priority and oldest timestamp

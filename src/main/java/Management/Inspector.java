@@ -1,14 +1,13 @@
 package Management;
 
-import Factory.Factory;
-import Operation.OperationalCapable;
-import ProductionEntity.ProductionEntity;
+import Production.Factory.Factory;
+import Production.ProductionEntity.OperationalCapable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Inspector extends Management{
+public class Inspector extends Management {
     public Inspector(Factory factory) {
         super(factory);
     }

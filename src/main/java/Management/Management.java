@@ -1,15 +1,14 @@
 package Management;
 
-import Factory.Factory;
 import Product.Product;
-import ProductionEntity.Device.Cobot;
-import ProductionEntity.Device.Machine;
-import ProductionEntity.Device.Resourse.DeviceResourceAbstract;
-import ProductionEntity.Human.Repairman;
-import ProductionEntity.Human.Worker;
-import Factory.ProductionLine;
+import Production.Factory.Factory;
+import Production.ProductionEntity.Device.Cobot;
+import Production.ProductionEntity.Device.Machine;
+import Production.ProductionEntity.Device.Resourse.DeviceResourceAbstract;
+import Production.ProductionEntity.Human.Repairman;
+import Production.ProductionEntity.Human.Worker;
+import Production.ProductionLine.ProductionLine;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,13 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-public abstract class Management implements Visitor{
+public abstract class Management implements Visitor {
 
-    private Logger logger = LogManager.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
-    private List<Visitable> visitables = new ArrayList<Visitable>();
-    private Factory factory;
+    private final List<Visitable> visitables = new ArrayList<>();
+    private final Factory factory;
 
     public Management(Factory factory) {
         this.factory = factory;
@@ -31,14 +29,13 @@ public abstract class Management implements Visitor{
 
     @Override
     public void executeInspection() {
-        for(Visitable visitable : visitables) {
+        for (Visitable visitable : visitables) {
             visitable.accept(this);
         }
     }
 
     /**
      * Logs factory details
-     * @param factory
      */
     @Override
     public void visit(Factory factory) {
@@ -46,8 +43,6 @@ public abstract class Management implements Visitor{
         logger.info("Factory has " + factory.getProductionLines().size() + " production lines");
         logger.info("Factory has " + factory.getRepairmen().size() + " repairmen");
         logger.info("Factory has " + factory.getOperationalCapables().size() + " operational capables");
-        logger.info("Factory has " + factory.getOrderedProductSeries().size() + " ordered product series");
-        logger.info("Factory has " + factory.getProducedProductSeries().size() + " produced product series");
     }
 
     @Override
@@ -55,7 +50,7 @@ public abstract class Management implements Visitor{
         logger.info("Machine " + machine.getClass().getSimpleName() + machine.getId() + " has oil level " + machine.getOil().getCurrent() + " and condition level " + machine.getCondition().getCurrent());
         logger.info("Machine " + machine.getClass().getSimpleName() + machine.getId() + " has consumed electricity " + machine.getConsumedElectricity());
         logger.info("Machine " + machine.getClass().getSimpleName() + machine.getId() + " has total maintenance cost " + machine.getTotalMaintenanceCost() + " and total paid maintenance cost " + machine.getTotalPaidMaintenanceCost());
-        for(DeviceResourceAbstract deviceResourceAbstract : machine.getDeviceResources()) {
+        for (DeviceResourceAbstract deviceResourceAbstract : machine.getDeviceResources()) {
             logger.info("Machine " + machine.getClass().getSimpleName() + machine.getId() + " has " + deviceResourceAbstract.getClass().getSimpleName() + " level " + deviceResourceAbstract.getCurrent());
         }
     }
@@ -65,7 +60,7 @@ public abstract class Management implements Visitor{
         logger.info("Cobot " + cobot.getClass().getSimpleName() + cobot.getId() + " has oil level " + cobot.getOil().getCurrent() + " and condition level " + cobot.getCondition().getCurrent());
         logger.info("Cobot " + cobot.getClass().getSimpleName() + cobot.getId() + " has consumed electricity " + cobot.getConsumedElectricity());
         logger.info("Cobot " + cobot.getClass().getSimpleName() + cobot.getId() + " has total maintenance cost " + cobot.getTotalMaintenanceCost() + " and total paid maintenance cost " + cobot.getTotalPaidMaintenanceCost());
-        for(DeviceResourceAbstract deviceResourceAbstract : cobot.getDeviceResources()) {
+        for (DeviceResourceAbstract deviceResourceAbstract : cobot.getDeviceResources()) {
             logger.info("Cobot " + cobot.getClass().getSimpleName() + cobot.getId() + " has " + deviceResourceAbstract.getClass().getSimpleName() + " level " + deviceResourceAbstract.getCurrent());
         }
     }

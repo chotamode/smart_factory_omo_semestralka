@@ -1,12 +1,14 @@
 package Management;
 
-import Factory.Factory;
-import Factory.ProductionLine;
-import Operation.OperationalCapable;
 import Product.Product;
-import ProductionEntity.Human.Repairman;
+import Production.Factory.Factory;
+import Production.ProductionEntity.Human.Repairman;
+import Production.ProductionEntity.OperationalCapable;
+import Production.ProductionLine.ProductionLine;
 
-public class Director extends Management{
+import java.util.ArrayList;
+
+public class Director extends Management {
     public Director(Factory factory) {
         super(factory);
     }
@@ -15,15 +17,15 @@ public class Director extends Management{
     public void executeInspection() {
 
         getVisitables().add(getFactory());
-        for(Repairman repairman : getFactory().getRepairmen()) {
+        for (Repairman repairman : getFactory().getRepairmen()) {
             getVisitables().add(repairman);
         }
-        for(ProductionLine productionLine : getFactory().getProductionLines()) {
+        for (ProductionLine productionLine : getFactory().getProductionLines()) {
             getVisitables().add(productionLine);
-            for(OperationalCapable operationalCapable : productionLine.getOperationalCapables()) {
+            for (OperationalCapable operationalCapable : productionLine.getOperationalCapables()) {
                 getVisitables().add(operationalCapable);
             }
-            for(Product product : productionLine.getProductSeries().getProducts()) {
+            for (Product product : productionLine.getProductSeries() != null ? productionLine.getProductSeries().getProducts() : new ArrayList<Product>()) {
                 getVisitables().add(product);
             }
         }

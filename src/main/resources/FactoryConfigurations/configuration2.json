@@ -1,0 +1,32 @@
+{
+  "factoryType": "Production.Factory.ElectronicsFactory",
+  "productionLines": [1, 2, 3, 4, 5],
+  "repairmen": 2,
+  "workers": [
+    {"type": "worker", "workType": {"workType": "HUMAN", "name": "HUMAN_MOLDING"}},
+    {"type": "worker", "workType": {"workType": "HUMAN", "name": "HUMAN_PRESSING"}},
+    {"type": "worker", "workType": {"workType": "HUMAN", "name": "HUMAN_CUTTING"}},
+    {"type": "worker", "workType": {"workType": "HUMAN", "name": "HUMAN_CUTTING"}},
+    {"type": "worker", "workType": {"workType": "HUMAN", "name": "HUMAN_CUTTING"}},
+    {"type": "worker", "workType": {"workType": "HUMAN", "name": "HUMAN_CUTTING"}},
+    {"type": "machine", "workType": {"workType": "MACHINE", "name": "MACHINE_MOLDING"}},
+    {"type": "machine", "workType": {"workType": "MACHINE", "name": "MACHINE_PRESSING"}},
+    {"type": "machine", "workType": {"workType": "MACHINE", "name": "MACHINE_PRESSING"}},
+    {"type": "machine", "workType": {"workType": "MACHINE", "name": "MACHINE_CUTTING"}},
+    {"type": "machine", "workType": {"workType": "MACHINE", "name": "MACHINE_CUTTING"}},
+    {"type": "machine", "workType": {"workType": "MACHINE", "name": "MACHINE_CUTTING"}},
+    {"type": "cobot", "workType": {"workType": "COBOT", "name": "COBOT_MOLDING"}},
+    {"type": "cobot", "workType": {"workType": "COBOT", "name": "COBOT_PRESSING"}},
+    {"type": "cobot", "workType": {"workType": "COBOT", "name": "COBOT_CUTTING"}},
+    {"type": "cobot", "workType": {"workType": "COBOT", "name": "COBOT_MOLDING"}},
+    {"type": "cobot", "workType": {"workType": "COBOT", "name": "COBOT_MOLDING"}},
+    {"type": "cobot", "workType": {"workType": "COBOT", "name": "COBOT_MOLDING"}}
+  ],
+  "orderedProducts": [
+    {"Smartphone": 200},
+    {"Smartwatch": 100},
+    {"Laptop": 150},
+    {"Smartwatch": 300},
+    {"Laptop": 150}
+  ]
+}

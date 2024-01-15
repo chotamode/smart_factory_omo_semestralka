@@ -1,21 +1,25 @@
-import Management.Director;
-import Management.Inspector;
-import ProductionEntity.Device.Cobot;
-import ProductionEntity.Device.Machine;
-import Factory.ElectronicsFactory;
-import Factory.ProductionLine;
-import ProductionEntity.Human.Repairman;
-import ProductionEntity.Human.Worker;
 import Operation.WorkType.CobotWorkType;
 import Operation.WorkType.HumanWorkType;
 import Operation.WorkType.MachineWorkType;
-import Product.ProductBuilder;
-import Product.Product;
+import Product.ProductSeries;
+import Production.Factory.ElectronicsFactory;
+import Production.Factory.FactoryConfigurator;
+import Production.ProductionEntity.Device.Cobot;
+import Production.ProductionEntity.Device.Machine;
+import Production.ProductionEntity.Human.Repairman;
+import Production.ProductionEntity.Human.Worker;
+import Production.ProductionLine.ProductionLine;
+import Reporting.Report.EventGroup;
+import Reporting.ReportCreator.ConfigurationReportCreator;
+import Reporting.ReportCreator.ConsumptionReportCreator;
+import Reporting.ReportCreator.EventReportCreator;
+import Reporting.ReportCreator.OutagesReportCreator;
 import Util.TimeAndReportManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Main {
@@ -23,38 +27,96 @@ public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-//        Factory.Factory accepts order to produce Product in amount of 100
-//        Factory.Factory produces Product in amount of 100
-//        Factory.Factory constructs production Factory.ProductionLine of particular type, with particular Devices and Workers
-//        Factory.Factory starts production Factory.ProductionLine
 
-//        Scenario for Electronics Manufacturing Factory.Factory
+        ElectronicsFactory electronicsFactory;
 
-        final ElectronicsFactory electornicsFactory = new ElectronicsFactory();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Do you want to run one of the configurations from the JSON file or the default configuration? (Enter 'json1', 'json2' or 'default')");
 
-        electornicsFactory.setProductionLines(List.of(
-                new ProductionLine(1),
-                new ProductionLine(2),
-                new ProductionLine(3)
-        ));
+        String userInput = scanner.nextLine();
 
-        electornicsFactory.setOperationalCapables(List.of(
-                new Machine(MachineWorkType.MACHINE_PRESSING),
-                new Machine(MachineWorkType.MACHINE_MOLDING),
-                new Machine(MachineWorkType.MACHINE_CUTTING),
-                new Machine(MachineWorkType.MACHINE_CUTTING),
-                new Worker(HumanWorkType.HUMAN_MOLDING),
-                new Worker(HumanWorkType.HUMAN_PRESSING),
-                new Worker(HumanWorkType.HUMAN_CUTTING),
-                new Worker(HumanWorkType.HUMAN_CUTTING),
-                new Cobot(CobotWorkType.COBOT_MOLDING),
-                new Cobot(CobotWorkType.COBOT_MOLDING),
-                new Cobot(CobotWorkType.COBOT_PRESSING),
-                new Cobot(CobotWorkType.COBOT_CUTTING)
-        ));
+        if (userInput.equalsIgnoreCase("json1")) {
+            electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/configuration1.json");
+        } else if (userInput.equalsIgnoreCase("json2")) {
+            electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/configuration2.json");
+        } else if (userInput.equalsIgnoreCase("default")) {
+            electronicsFactory = new ElectronicsFactory();
+            defaultScenario(electronicsFactory);
+        } else {
+            System.out.println("Invalid input. Exiting program.");
+            return;
+        }
 
-        electornicsFactory.setRepairmen(List.of(
-                new Repairman()
+        final ConfigurationReportCreator configurationReportCreator = new ConfigurationReportCreator();
+        final EventReportCreator eventReportCreator = new EventReportCreator();
+        final ConsumptionReportCreator consumptionReportCreator = new ConsumptionReportCreator();
+        final OutagesReportCreator outagesReportCreator = new OutagesReportCreator();
+
+        try {
+            electronicsFactory.startProduction();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return;
+        }
+
+        while (electronicsFactory.isWorking()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+
+//                                     Inspectors and directors execute inspections                                 //
+//------------------------------------------------------------------------------------------------------------------//
+
+        electronicsFactory.executeInspectorInspection();
+        electronicsFactory.executeDirectorInspection();
+
+//                                                 Generate reports                                                 //
+//------------------------------------------------------------------------------------------------------------------//
+
+        Long startTime = TimeAndReportManager.getInstance().getStartTime();
+        Long endTime = TimeAndReportManager.getInstance().getEndTime();
+
+        configurationReportCreator.createReportForTime(TimeAndReportManager.getInstance().getStartTime() + 100L);
+
+        eventReportCreator.createReportForTimePeriod(startTime, endTime, EventGroup.BY_HANDLER);
+        eventReportCreator.createReportForTimePeriod(startTime, endTime, EventGroup.BY_SOURCE);
+        eventReportCreator.createReportForTimePeriod(startTime, endTime, EventGroup.BY_TYPE);
+
+        consumptionReportCreator.createReportForTimePeriod(startTime, endTime);
+
+        outagesReportCreator.createReportForTimePeriod(startTime, endTime);
+
+//--------------------------------------------------------------------------------------------------------------------//
+
+        electronicsFactory.getDevicesState(473454L);
+
+        logger.info("Factory delivers order to client");
+        try {
+            for (ProductSeries productSeries : electronicsFactory.deliverAllOrders()) {
+                logger.info("Product series: " + productSeries.getProductName() + " delivered in amount of " + productSeries.getProducts().size());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        TimeAndReportManager.getInstance().stop();
+    }
+
+    private static void defaultScenario(ElectronicsFactory electronicsFactory) {
+
+        electronicsFactory.setProductionLines(List.of(new ProductionLine(1), new ProductionLine(2), new ProductionLine(3)));
+
+        electronicsFactory.setOperationalCapables(List.of(new Machine(MachineWorkType.MACHINE_PRESSING), new Machine(MachineWorkType.MACHINE_PRESSING), new Machine(MachineWorkType.MACHINE_PRESSING), new Machine(MachineWorkType.MACHINE_MOLDING), new Machine(MachineWorkType.MACHINE_CUTTING), new Machine(MachineWorkType.MACHINE_CUTTING),
+
+                new Worker(HumanWorkType.HUMAN_MOLDING), new Worker(HumanWorkType.HUMAN_PRESSING), new Worker(HumanWorkType.HUMAN_CUTTING), new Worker(HumanWorkType.HUMAN_CUTTING), new Worker(HumanWorkType.HUMAN_CUTTING),
+
+                new Cobot(CobotWorkType.COBOT_MOLDING), new Cobot(CobotWorkType.COBOT_MOLDING), new Cobot(CobotWorkType.COBOT_MOLDING), new Cobot(CobotWorkType.COBOT_PRESSING), new Cobot(CobotWorkType.COBOT_CUTTING)));
+
+        electronicsFactory.setRepairmen(List.of(new Repairman()
 //                ,
 //                new Repairman(),
 //                new Repairman(),
@@ -64,35 +126,46 @@ public class Main {
         final int PRODUCTION_AMOUNT1 = 200;
         final int PRODUCTION_AMOUNT2 = 100;
         final int PRODUCTION_AMOUNT3 = 50;
-        final ProductBuilder productBuilder = new ProductBuilder();
 
-        Director director = new Director(electornicsFactory);
-        Inspector inspector = new Inspector(electornicsFactory);
+        electronicsFactory.acceptOrder("Smartphone", PRODUCTION_AMOUNT1);
+        electronicsFactory.acceptOrder("Smartwatch", PRODUCTION_AMOUNT2);
+        electronicsFactory.acceptOrder("Laptop", PRODUCTION_AMOUNT3);
 
-        logger.info("Electronics factory accepts order to produce Smartphone in amount of " + PRODUCTION_AMOUNT1);
-        electornicsFactory.acceptOrder("Smartphone", PRODUCTION_AMOUNT1);
-        electornicsFactory.acceptOrder("Smartwatch", PRODUCTION_AMOUNT2);
-        electornicsFactory.acceptOrder("Laptop", PRODUCTION_AMOUNT3);
+        try {
+            electronicsFactory.startProduction();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return;
+        }
 
-//        TimeAndReportManager.getInstance().start();
-
-        electornicsFactory.startProduction();
-
-        while(electornicsFactory.isWorking()) {
+        while (electronicsFactory.isWorking()) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
-        director.executeInspection();
-        inspector.executeInspection();
+        final int PRODUCTION_AMOUNT4 = 100;
+        final int PRODUCTION_AMOUNT5 = 200;
+        final int PRODUCTION_AMOUNT6 = 300;
+        electronicsFactory.acceptOrder("Laptop", PRODUCTION_AMOUNT4);
+        electronicsFactory.acceptOrder("Laptop", PRODUCTION_AMOUNT5);
+        electronicsFactory.acceptOrder("Laptop", PRODUCTION_AMOUNT6);
 
-        logger.info("Factory delivers order to client");
-        logger.info(electornicsFactory.deliverOrder("Smartphone", PRODUCTION_AMOUNT1));
+        try {
+            electronicsFactory.startProduction();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return;
+        }
 
-        TimeAndReportManager.getInstance().stop();
-
+        while (electronicsFactory.isWorking()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
+        }
     }
 }

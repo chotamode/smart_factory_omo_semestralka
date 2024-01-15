@@ -1,8 +1,6 @@
 package Product;
 
 import Operation.WorkType.HumanWorkType;
-import Operation.WorkType.MachineWorkType;
-import Operation.WorkType.WorkType;
 import Operation.Operation;
 import Product.Material.MaterialType;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProductSeriesTest {
 
-    ProductBuilder productBuilder = new ProductBuilder();
+    final ProductBuilder productBuilder = new ProductBuilder();
     ProductSeries productSeries1;
-    Map<MaterialType, Integer> totalNeededMaterials1 = new HashMap<>();
+    final Map<MaterialType, Integer> totalNeededMaterials1 = new HashMap<>();
 
     @BeforeEach
     void setUp() {

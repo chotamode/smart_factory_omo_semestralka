@@ -22,19 +22,25 @@ public class ProductSeries {
         this.productName = productName;
     }
 
+    @Override
+    public String toString() {
+        return "ProductSeries{" +
+                "productName='" + productName + '\'' +
+                "} in amount of " + products.size();
+    }
 
     public void addProduct(Product product) {
-        if(!Objects.equals(productName, product.getName())) {
+        if (!Objects.equals(productName, product.getName())) {
             throw new IllegalArgumentException("Product name does not match product series name");
         }
-        if(workerSequence == null) {
+        if (workerSequence == null) {
             workerSequence = product.getWorkerSequence();
         }
-        if(!Objects.equals(workerSequence, product.getWorkerSequence())) {
+        if (!Objects.equals(workerSequence, product.getWorkerSequence())) {
             throw new IllegalArgumentException("Product worker sequence does not match product series worker sequence");
         }
 
-        if(!products.isEmpty()) {
+        if (!products.isEmpty()) {
             product.setSeriesIndex(products.get(products.size() - 1).getSeriesIndex() + 1);
         } else {
             product.setSeriesIndex(0);
@@ -52,8 +58,8 @@ public class ProductSeries {
     }
 
     public boolean isFinished() {
-        for(Product product : products) {
-            if(!product.isFinished()) {
+        for (Product product : products) {
+            if (!product.isFinished()) {
                 return false;
             }
         }
@@ -63,8 +69,8 @@ public class ProductSeries {
 
     public Map<MaterialType, Integer> getTotalMaterialNeeded() {
         Map<MaterialType, Integer> totalMaterialNeeded = new HashMap<>();
-        for(Product product : products) {
-            for(ProductMaterial productMaterial : product.getProductMaterials()) {
+        for (Product product : products) {
+            for (ProductMaterial productMaterial : product.getProductMaterials()) {
                 totalMaterialNeeded.merge(productMaterial.getType(), productMaterial.getQuantityNeeded(), Integer::sum);
             }
         }
@@ -72,16 +78,16 @@ public class ProductSeries {
     }
 
     public void setStockMaterials(List<StockMaterial> stockMaterials) {
-        for(Product product : products) {
+        for (Product product : products) {
             product.setStockMaterials(stockMaterials);
         }
     }
 
     public Map<MaterialType, Integer> getNotSetStockMaterials() {
         Map<MaterialType, Integer> notSetStockMaterials = new HashMap<>();
-        for(Product product : products) {
-            for(ProductMaterial productMaterial : product.getProductMaterials()) {
-                if(productMaterial.getStockMaterial().isEmpty()) {
+        for (Product product : products) {
+            for (ProductMaterial productMaterial : product.getProductMaterials()) {
+                if (productMaterial.getStockMaterial().isEmpty()) {
                     notSetStockMaterials.merge(productMaterial.getType(), productMaterial.getQuantityNeeded(), Integer::sum);
                 }
             }
@@ -90,8 +96,12 @@ public class ProductSeries {
     }
 
     public void addMaterials() throws Exception {
-        for(Product product : products) {
+        for (Product product : products) {
             product.addMaterials();
         }
+    }
+
+    public int getAmountInSeries() {
+        return products.size();
     }
 }

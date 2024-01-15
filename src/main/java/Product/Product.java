@@ -12,10 +12,10 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@Setter
 @Getter
+@Setter
 public class Product implements Visitable {
+
     private String name;
     private String description;
     private boolean finished;
@@ -24,7 +24,7 @@ public class Product implements Visitable {
     private Operation lastOperation;
     private int seriesIndex;
 
-    private List<ProductMaterial> productMaterials = new ArrayList<>(){
+    private List<ProductMaterial> productMaterials = new ArrayList<>() {
         @Override
         public boolean contains(Object o) {
             if (o instanceof ProductMaterial productMaterial) {
@@ -95,7 +95,7 @@ public class Product implements Visitable {
 
     public void setNextOperation() {
         currentOperation = currentOperation.getNextOperation();
-        if(currentOperation == null) {
+        if (currentOperation == null) {
             finished = true;
         }
     }
@@ -105,8 +105,8 @@ public class Product implements Visitable {
     }
 
     public boolean isFinished() {
-        for(Operation operation : getOperations()) {
-            if(!operation.isFinished()) {
+        for (Operation operation : getOperations()) {
+            if (!operation.isFinished()) {
                 finished = false;
                 return false;
             }

@@ -40,10 +40,10 @@ public class ProductBuilder {
     /**
      * Prebuilt Product objects.
      */
-    public Product buildProductSmartphone(){
-    reset();
-    product.setName("Smartphone");
-    product.setDescription("A high-end smartphone with advanced features.");
+    public Product buildProductSmartphone() {
+        reset();
+        product.setName("Smartphone");
+        product.setDescription("A high-end smartphone with advanced features.");
         try {
             addProductMaterial(new ProductMaterial(1, MaterialUnits.UNIT, MaterialType.PROCESSOR))
                     .addProductMaterial(new ProductMaterial(1, MaterialUnits.UNIT, MaterialType.BATTERY))
@@ -57,9 +57,9 @@ public class ProductBuilder {
             throw new RuntimeException(e);
         }
         return build();
-}
+    }
 
-    public Product buildProductSmartWatch(){
+    public Product buildProductSmartWatch() {
         reset();
         product.setName("Smartwatch");
         product.setDescription("A versatile smartwatch with health tracking features.");
@@ -76,7 +76,7 @@ public class ProductBuilder {
         return build();
     }
 
-    public Product buildProductLaptop(){
+    public Product buildProductLaptop() {
         reset();
         product.setName("Laptop");
         product.setDescription("A portable computer suitable for work and entertainment.");
@@ -97,7 +97,7 @@ public class ProductBuilder {
         return build();
     }
 
-    public Product buildProductLearnTablet(){
+    public Product buildProductLearnTablet() {
         reset();
         product.setName("Learning Tablet");
         product.setDescription("A tablet computer for children to learn and play.");
@@ -119,7 +119,7 @@ public class ProductBuilder {
         return build();
     }
 
-    public Product buildProductRemControlCar(){
+    public Product buildProductRemControlCar() {
         reset();
         product.setName("Remote-Controlled Car");
         product.setDescription("A high-speed, durable remote-controlled car for indoor and outdoor play.");
@@ -139,7 +139,7 @@ public class ProductBuilder {
         return build();
     }
 
-    public Product buildProductBlockSet(){
+    public Product buildProductBlockSet() {
         reset();
         product.setName("Building Block Set");
         product.setDescription("A set of interlocking plastic bricks for creative building and play.");

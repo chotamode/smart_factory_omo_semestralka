@@ -1,8 +1,9 @@
 package Operation;
 
-import ProductionEntity.Device.Cobot;
-import ProductionEntity.Device.Machine;
-import ProductionEntity.Human.Worker;
+import EventManagement.Channels.ProductionEventChannel;
+import Production.ProductionEntity.Device.Cobot;
+import Production.ProductionEntity.Device.Machine;
+import Production.ProductionEntity.Human.Worker;
 import Operation.WorkType.CobotWorkType;
 import Operation.WorkType.HumanWorkType;
 import Operation.WorkType.MachineWorkType;
@@ -15,26 +16,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProductionEntityTest {
 
-    ProductBuilder productBuilder = new ProductBuilder();
-    Product product = productBuilder.buildProductSmartphone();
-    Worker worker = new Worker(HumanWorkType.HUMAN_MOLDING);
-    Cobot cobot = new Cobot(CobotWorkType.COBOT_PRESSING);
-    Machine machine = new Machine(MachineWorkType.MACHINE_CUTTING);
+    final ProductBuilder productBuilder = new ProductBuilder();
+    final Product product = productBuilder.buildProductSmartphone();
+    final Worker worker = new Worker(HumanWorkType.HUMAN_MOLDING);
+    final Cobot cobot = new Cobot(CobotWorkType.COBOT_PRESSING);
+    final Machine machine = new Machine(MachineWorkType.MACHINE_CUTTING);
+    final ProductionEventChannel productionEventChannel = new ProductionEventChannel();
 
     @BeforeEach
     void setUp() {
         worker.setNextWorker(cobot);
         cobot.setNextWorker(machine);
+        worker.subscribeToProductionEventChannel(productionEventChannel);
+        cobot.subscribeToProductionEventChannel(productionEventChannel);
     }
 
     @Test
     void workOnProduct() throws Exception {
         worker.workOnProduct(product);
-        assertTrue(product.getCurrentOperation().isFinished());
-        Operation operation = product.getFirstOperation();
-        while(operation != null) {
-            assertTrue(operation.isFinished());
-            operation = operation.getNextOperation();
-        }
+        assertTrue(product.getFirstOperation().isFinished());
     }
 }

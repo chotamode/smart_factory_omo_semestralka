@@ -1,12 +1,12 @@
 package Management;
 
-import Factory.Factory;
-import ProductionEntity.Device.Cobot;
-import ProductionEntity.Device.Machine;
-import ProductionEntity.Human.Repairman;
-import ProductionEntity.Human.Worker;
 import Product.Product;
-import Factory.ProductionLine;
+import Production.Factory.Factory;
+import Production.ProductionEntity.Device.Cobot;
+import Production.ProductionEntity.Device.Machine;
+import Production.ProductionEntity.Human.Repairman;
+import Production.ProductionEntity.Human.Worker;
+import Production.ProductionLine.ProductionLine;
 
 public interface Visitor {
 

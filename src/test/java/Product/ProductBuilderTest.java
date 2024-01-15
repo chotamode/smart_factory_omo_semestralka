@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProductBuilderTest {
 
-    List<WorkType> workerSequenceSmartPhone = List.of(
+    final List<WorkType> workerSequenceSmartPhone = List.of(
             HumanWorkType.HUMAN_MOLDING,
             CobotWorkType.COBOT_PRESSING,
             MachineWorkType.MACHINE_CUTTING

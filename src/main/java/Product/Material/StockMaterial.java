@@ -9,10 +9,10 @@ import java.util.UUID;
 @Getter
 public class StockMaterial {
 
+    private static final UUID id = UUID.randomUUID();
     private int quantity;
     private MaterialUnits unit = MaterialUnits.UNIT;
     private MaterialType type;
-    private static final UUID id = UUID.randomUUID();
     /**
      * Price per unit
      */

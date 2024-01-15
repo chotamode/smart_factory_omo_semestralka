@@ -1,8 +1,11 @@
 package Product.Material;
 
+import lombok.Getter;
+
 /**
  * Enum class for material types
  */
+@Getter
 public enum MaterialType {
     PROCESSOR(10),
     BATTERY(11),
@@ -30,10 +33,6 @@ public enum MaterialType {
 
     MaterialType(int price) {
         this.price = price;
-    }
-
-    public int getPrice() {
-        return price;
     }
 
     public String getName() {
