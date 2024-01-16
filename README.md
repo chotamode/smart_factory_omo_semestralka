@@ -1,9 +1,6 @@
-# Smart Factory.Factory
+# Projekt: Smart Factory
 
 ---
-
-
-# Projekt: Smart Factory
 
 ## Abstrakt
 
@@ -11,48 +8,48 @@ Vytvořit aplikaci pro virtuální simulaci inteligentní továrny, kde simuluje
 
 ## Funkční požadavky
 
- -[x] **F1.** Hlavní entity se kterými pracujeme je továrna, linka (s prioritou), stroj, člověk a výrobek, materiál plus libovolné další entity. Stroje, lidé i výrobky mohou být různého druhu.
- -[x] **F2.** Produkty se vyrábějí v sériích po několika stech kusů, jestliže se mění série nekompatibilních výrobků, tak je potřeba výrobní linky přeskládat. Každý výrobek má definovanou sekvenci zařízení, robotů, lidí, které je potřeba za sebou uspořádat na linku.
- -[x] **F3.** Stroje a roboty mají svoji spotřebu; lidé, roboty, stroje i materiál stojí náklady.
- -[x] **F4.** Komunikace mezi stroji, roboty a lidmi probíhá pomocí eventů. Event může dostat 1 až N entit (člověk, stroj, robot), které jsou na daný druh eventu zaregistrované. Eventy je potřeba odbavit.
- -[x] **F5.** Jednotlivá zařízení mají API na sběr dat o tomto zařízení. O zařízeních sbíráme data jako je spotřeba elektřiny, oleje, materiálu a funkčnost (opotřebení roste s časem).
- -[x] **F6.** Stroje a roboty se po určité době rozbijí. Po rozbití vygenerují event (alert) s prioritou podle důležitosti linky, který odbaví člověk - opravář.
- -[x] **F7.** Opravářů je omezený počet. Oprava trvá několik taktů. Při začátku opravy a konci opravy je generován event (bude se hodit pro požadavek F10 :-). Vznikají situace, kdy nejsou dostupní žádní opraváři - pak se čeká dokud se některý z nich neuvolní. Po uvolnění opravář nastupuje na 1. nejprioritnější, 2. nejstarší defekt.
- -[x] **F8.** Návštěva ředitele a inspektora. Realizujeme návštěvu továrny, kdy ředitel prochází továrnou přesně podle stromové hierarchie entit továrna ->* linka -> *(stroj|robot|člověk nebo výrobek) a inspektor prochází podle míry opotřebení. Ředitel i inspektor mají na sobě definované akce, které provedou s daným typem entity. Zapište sekvenci procházení a názvy provedených akcí do logu.
- -[x] **F9.** Za továrnu je nutné vygenerovat následující reporty za libovolné časové období:
-    - FactoryConfigurationReport: veškerá konfigurační data továrny zachovávající hierarchii - továrna ->* linka -> *(stroj|robot|člověk nebo výrobek).
-    - EventReport: jaké za jednotlivé období vznikly eventy, kde je grupujeme 1) podle typu eventu, (2) podle typu zdroje eventu a (3) podle toho, kdo je odbavil.
-    - ConsumptionReport: Kolik jednotlivé zařízení, roboty spotřebovaly elektřiny, oleje, materiálu. Včetně finančního vyčíslení. V reportu musí být i summární spotřeby za nadřazané entity (linka|továrna)
-    - OuttagesReport: Nejdelší výpadek, nejkratší výpadek, průměrná doba výpadku, průměrná doba čekání na opraváře a typy zdrojů výpadků setříděné podle délky výpadku.
- -[x] **F10.** Vraťte stavy strojů v zadaném taktu (jiném než posledním :-)). Stav zrekonstruujte z počátečního stavu a sekvence eventů, které byly na stroji provedeny.
+ -[x] **F1.** Hlavní entity se kterými pracujeme je továrna, linka (s prioritou), stroj, člověk a výrobek, materiál plus libovolné další entity. Stroje, lidé i výrobky mohou být různého druhu.  
+ -[x] **F2.** Produkty se vyrábějí v sériích po několika stech kusů, jestliže se mění série nekompatibilních výrobků, tak je potřeba výrobní linky přeskládat. Každý výrobek má definovanou sekvenci zařízení, robotů, lidí, které je potřeba za sebou uspořádat na linku.  
+ -[x] **F3.** Stroje a roboty mají svoji spotřebu; lidé, roboty, stroje i materiál stojí náklady.  
+ -[x] **F4.** Komunikace mezi stroji, roboty a lidmi probíhá pomocí eventů. Event může dostat 1 až N entit (člověk, stroj, robot), které jsou na daný druh eventu zaregistrované. Eventy je potřeba odbavit.  
+ -[x] **F5.** Jednotlivá zařízení mají API na sběr dat o tomto zařízení. O zařízeních sbíráme data jako je spotřeba elektřiny, oleje, materiálu a funkčnost (opotřebení roste s časem).  
+ -[x] **F6.** Stroje a roboty se po určité době rozbijí. Po rozbití vygenerují event (alert) s prioritou podle důležitosti linky, který odbaví člověk - opravář.  
+ -[x] **F7.** Opravářů je omezený počet. Oprava trvá několik taktů. Při začátku opravy a konci opravy je generován event (bude se hodit pro požadavek F10 :-). Vznikají situace, kdy nejsou dostupní žádní opraváři - pak se čeká dokud se některý z nich neuvolní. Po uvolnění opravář nastupuje na 1. nejprioritnější, 2. nejstarší defekt.  
+ -[x] **F8.** Návštěva ředitele a inspektora. Realizujeme návštěvu továrny, kdy ředitel prochází továrnou přesně podle stromové hierarchie entit továrna ->* linka -> *(stroj|robot|člověk nebo výrobek) a inspektor prochází podle míry opotřebení. Ředitel i inspektor mají na sobě definované akce, které provedou s daným typem entity. Zapište sekvenci procházení a názvy provedených akcí do logu.  
+ -[x] **F9.** Za továrnu je nutné vygenerovat následující reporty za libovolné časové období:  
+    - FactoryConfigurationReport: veškerá konfigurační data továrny zachovávající hierarchii - továrna ->* linka -> *(stroj|robot|člověk nebo výrobek).  
+    - EventReport: jaké za jednotlivé období vznikly eventy, kde je grupujeme 1) podle typu eventu, (2) podle typu zdroje eventu a (3) podle toho, kdo je odbavil.  
+    - ConsumptionReport: Kolik jednotlivé zařízení, roboty spotřebovaly elektřiny, oleje, materiálu. Včetně finančního vyčíslení. V reportu musí být i summární spotřeby za nadřazané entity (linka|továrna)  
+    - OuttagesReport: Nejdelší výpadek, nejkratší výpadek, průměrná doba výpadku, průměrná doba čekání na opraváře a typy zdrojů výpadků setříděné podle délky výpadku.  
+ -[x] **F10.** Vraťte stavy strojů v zadaném taktu (jiném než posledním :-)). Stav zrekonstruujte z počátečního stavu a sekvence eventů, které byly na stroji provedeny.  
 
 ## Nefunkční požadavky
 
--[x] Není požadována autentizace ani autorizace
--[x] Aplikace může běžet pouze v jedné JVM
--[x] Aplikaci pište tak, aby byly dobře schované metody a proměnné, které nemají být dostupné ostatním třídám. Vygenerovný javadoc by měl mít co nejméně public metod a proměnných.
--[x] Reporty jsou generovány do textového souboru
--[x] Konfigurace továrny může být nahrávána přímo z třídy nebo externího souboru (preferován je json)
+-[x] Není požadována autentizace ani autorizace  
+-[x] Aplikace může běžet pouze v jedné JVM  
+-[x] Aplikaci pište tak, aby byly dobře schované metody a proměnné, které nemají být dostupné ostatním třídám. Vygenerovný javadoc by měl mít co nejméně public metod a proměnných.  
+-[x] Reporty jsou generovány do textového souboru  
+-[x] Konfigurace továrny může být nahrávána přímo z třídy nebo externího souboru (preferován je json)  
 
 ## Požadované výstupy
 
--[x] Design ve formě use case diagramů, class diagramů a stručného popisu jak chcete úlohu realizovat
--[x] Veřejné API - Javadoc vygenerovaný pro funkce, kterými uživatel pracuje s vaším software
--[x] Dvě různé konfigurace továrny, alespoň 30 entit.
+-[x] Design ve formě use case diagramů, class diagramů a stručného popisu jak chcete úlohu realizovat  
+-[x] Veřejné API - Javadoc vygenerovaný pro funkce, kterými uživatel pracuje s vaším software  
+-[x] Dvě různé konfigurace továrny, alespoň 30 entit.  
 
 ## Spuštění
 
-Pro spuštění aplikace je potřeba spustit třídu Main.java. V přikazové řádce bude vypsáno menu, ve kterém je možné vybrat jednu z možností.
+Pro spuštění aplikace je potřeba spustit třídu Main.java. V přikazové řádce bude vypsáno menu, ve kterém je možné vybrat jednu z možností.  
 
 ## Design patterny
 
 ### Factory
 
-Factory Method pattern je použit v tomto projektu v rámci tříd pro vytváření reportů. Třída ReportCreator je abstraktní třída, která definuje metodu createReport(). Tato metoda je označena jako protected abstract, což znamená, že každá třída, která dědí z ReportCreator, musí implementovat svou vlastní verzi této metody.
+Factory Method pattern je použit v tomto projektu v rámci tříd pro vytváření reportů. Třída ReportCreator je abstraktní třída, která definuje metodu createReport(). Tato metoda je označena jako protected abstract, což znamená, že každá třída, která dědí z ReportCreator, musí implementovat svou vlastní verzi této metody.  
 
-Konkrétní třídy jako ConfigurationReportCreator, ConsumptionReportCreator, EventReportCreator a OutagesReportCreator jsou konkrétní implementace ReportCreator. Každá z těchto tříd poskytuje svou vlastní implementaci metody createReport(), která vytváří specifický typ reportu.  Toto je klasický příklad Factory Method patternu, kde je definována abstraktní metoda pro vytváření objektu a konkrétní třídy poskytují implementaci pro vytváření konkrétních typů objektů.
+Konkrétní třídy jako ConfigurationReportCreator, ConsumptionReportCreator, EventReportCreator a OutagesReportCreator jsou konkrétní implementace ReportCreator. Každá z těchto tříd poskytuje svou vlastní implementaci metody createReport(), která vytváří specifický typ reportu.  Toto je klasický příklad Factory Method patternu, kde je definována abstraktní metoda pro vytváření objektu a konkrétní třídy poskytují implementaci pro vytváření konkrétních typů objektů.  
 
-Tento návrhový vzor umožňuje flexibilitu při vytváření různých typů objektů bez nutnosti měnit kód, který tyto objekty vytváří.
+Tento návrhový vzor umožňuje flexibilitu při vytváření různých typů objektů bez nutnosti měnit kód, který tyto objekty vytváří.  
 
 ### Observer/Observable
 
