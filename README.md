@@ -103,6 +103,10 @@ Tento návrhový vzor umožňuje flexibilní a efektivní zpracování požadavk
 
 ## UML diagramy
 
+### Use case diagram
+
+![Use case.png](documents%2Fdiagram_images%2FUse%20case.png)
+
 ### Patterny
 
 ![Builder.png](documents%2Fdiagram_images%2Fpatterns%2FBuilder.png)
