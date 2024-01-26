@@ -39,7 +39,7 @@ Vytvořit aplikaci pro virtuální simulaci inteligentní továrny, kde simuluje
 
 ## Spuštění
 
-Pro spuštění aplikace je potřeba spustit třídu Main.java. V přikazové řádce bude vypsáno menu, ve kterém je možné vybrat jednu z možností.  
+Pro spuštění aplikace je potřeba spustit třídu SmartFactory.java. V přikazové řádce bude vypsáno menu, ve kterém je možné vybrat jednu z možností.  
 
 ## Design patterny
 
@@ -100,3 +100,24 @@ V tomto projektu byl tento vzor použit v rámci výrobní linky. Každý pracov
 Tento mechanismus je implementován v metodě workOnProduct() třídy ProductionEntity. Když pracovník dokončí svou operaci na produktu, zkontroluje, zda existuje další pracovník v řetězci. Pokud ano, předá mu produkt k dalšímu zpracování. Pokud ne, označí produkt jako hotový.  
 
 Tento návrhový vzor umožňuje flexibilní a efektivní zpracování požadavků v systému, kde může být požadavek zpracován několika různými objekty.
+
+## UML diagramy
+
+### Patterny
+
+![Chain of responcibility.png](..%2F..%2F..%2FChain%20of%20responcibility.png)
+![Builder.png](..%2F..%2F..%2FBuilder.png)
+![Factory.png](..%2F..%2F..%2FFactory.png)
+![ObserverObservable Events.png](..%2F..%2F..%2FObserverObservable%20Events.png)
+![ObserverObservable, Singleton Time.png](..%2F..%2F..%2FObserverObservable%2C%20Singleton%20Time.png)
+![Visitor.png](..%2F..%2F..%2FVisitor.png)
+
+### Důležité třídy
+
+![Management.png](..%2F..%2F..%2FManagement.png)
+![EventManagement.png](..%2F..%2F..%2FEventManagement.png)
+![FactoryClass.png](..%2F..%2F..%2FFactoryClass.png)
+
+### Všechny třídy
+
+![Class diagram v0.9.png](..%2F..%2F..%2FClass%20diagram%20v0.9.png)

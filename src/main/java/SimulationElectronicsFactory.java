@@ -19,39 +19,34 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-import java.util.Scanner;
 
+public class SimulationElectronicsFactory{
 
-public class Main {
+    Logger logger = LogManager.getLogger(SimulationElectronicsFactory.class);
 
-    private static final Logger logger = LogManager.getLogger(Main.class);
+    ElectronicsFactory electronicsFactory;
 
-    public static void main(String[] args) {
+    public void runJson1() {
+        electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/configuration1.json");
+        runSimulation();
+    }
 
-        ElectronicsFactory electronicsFactory;
+    public void runJson2() {
+        electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/configuration2.json");
+        runSimulation();
+    }
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Do you want to run one of the configurations from the JSON file or the default configuration? (Enter 'json1', 'json2', 'default' or 'own json')");
+    public void runDefault(){
+        electronicsFactory = new ElectronicsFactory();
+        defaultScenario(electronicsFactory);
+    }
 
-        String userInput = scanner.nextLine();
+    public void runOwnJson(String fileName){
+        electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/" + fileName);
+        runSimulation();
+    }
 
-        if (userInput.equalsIgnoreCase("json1")) {
-            electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/configuration1.json");
-        } else if (userInput.equalsIgnoreCase("json2")) {
-            electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/configuration2.json");
-        } else if (userInput.equalsIgnoreCase("default")) {
-            electronicsFactory = new ElectronicsFactory();
-            defaultScenario(electronicsFactory);
-        } else if(userInput.equalsIgnoreCase("own json")) {
-            System.out.println("Enter file name located in src/main/resources/FactoryConfigurations/");
-            String fileName = scanner.nextLine();
-            electronicsFactory = FactoryConfigurator.configureElectronicsFactory("src/main/resources/FactoryConfigurations/" + fileName);
-        } else {
-            System.out.println("Wrong input. Default scenario will be run.");
-            electronicsFactory = new ElectronicsFactory();
-            defaultScenario(electronicsFactory);
-        }
-
+    private void runSimulation() {
         final ConfigurationReportCreator configurationReportCreator = new ConfigurationReportCreator();
         final EventReportCreator eventReportCreator = new EventReportCreator();
         final ConsumptionReportCreator consumptionReportCreator = new ConsumptionReportCreator();
@@ -111,7 +106,7 @@ public class Main {
         TimeAndReportManager.getInstance().stop();
     }
 
-    private static void defaultScenario(ElectronicsFactory electronicsFactory) {
+    private void defaultScenario(ElectronicsFactory electronicsFactory) {
 
         electronicsFactory.setProductionLines(List.of(new ProductionLine(1), new ProductionLine(2), new ProductionLine(3)));
 
@@ -172,5 +167,7 @@ public class Main {
                 logger.error(e.getMessage());
             }
         }
+
+        TimeAndReportManager.getInstance().stop();
     }
 }
