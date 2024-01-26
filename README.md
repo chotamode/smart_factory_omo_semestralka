@@ -105,19 +105,19 @@ Tento návrhový vzor umožňuje flexibilní a efektivní zpracování požadavk
 
 ### Patterny
 
-![Chain of responcibility.png](..%2F..%2F..%2FChain%20of%20responcibility.png)
-![Builder.png](..%2F..%2F..%2FBuilder.png)
-![Factory.png](..%2F..%2F..%2FFactory.png)
-![ObserverObservable Events.png](..%2F..%2F..%2FObserverObservable%20Events.png)
-![ObserverObservable, Singleton Time.png](..%2F..%2F..%2FObserverObservable%2C%20Singleton%20Time.png)
-![Visitor.png](..%2F..%2F..%2FVisitor.png)
+![Builder.png](documents%2Fdiagram_images%2Fpatterns%2FBuilder.png)
+![Chain of responcibility.png](documents%2Fdiagram_images%2Fpatterns%2FChain%20of%20responcibility.png)
+![Factory.png](documents%2Fdiagram_images%2Fpatterns%2FFactory.png)
+![ObserverObservable, Singleton Time.png](documents%2Fdiagram_images%2Fpatterns%2FObserverObservable%2C%20Singleton%20Time.png)
+![ObserverObservable Events.png](documents%2Fdiagram_images%2Fpatterns%2FObserverObservable%20Events.png)
+![Visitor.png](documents%2Fdiagram_images%2Fpatterns%2FVisitor.png)
 
 ### Důležité třídy
 
-![Management.png](..%2F..%2F..%2FManagement.png)
-![EventManagement.png](..%2F..%2F..%2FEventManagement.png)
-![FactoryClass.png](..%2F..%2F..%2FFactoryClass.png)
+![EventManagement.png](documents%2Fdiagram_images%2Fnecessery_classes%2FEventManagement.png)
+![FactoryClass.png](documents%2Fdiagram_images%2Fnecessery_classes%2FFactoryClass.png)
+![Management.png](documents%2Fdiagram_images%2Fnecessery_classes%2FManagement.png)
 
 ### Všechny třídy
 
-![Class diagram v0.9.png](..%2F..%2F..%2FClass%20diagram%20v0.9.png)
+![Class diagram v0.9.png](documents%2Fdiagram_images%2FClass%20diagram%20v0.9.png)
